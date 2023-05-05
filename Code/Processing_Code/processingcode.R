@@ -26,6 +26,11 @@ results_path <- "../../Results/"
 rawdata <- read.csv(data_location, check.names=FALSE)
 head(rawdata)
 
+# adding in score data
+scores <- read.csv(paste(data_path, "Oreophryne_character_scores.csv", sep=""))
+print(scores)
+names(scores) <- gsub(" ", "_", names(scores))
+
 # view data dictionary
 dictionary <- read.csv(paste(data_path, "datadictionary.csv", sep=""))
 print(dictionary)
@@ -41,12 +46,15 @@ dat <- rawdata[-nas,] # exclude these rows
 head(dat)
 
 #removing unnecessary columns, artifacts from importing pixel measurements from ImageJ
-dat2 <- dat[-c(5:13)]
+dat <- dat[-c(5:13)]
 
 #cleaning up column names
-colnames(dat2) <- c("genus","species", "BPBM", "SVL", "finger", "toe", "ft", "anterior", "posterior", "ap")
+colnames(dat) <- c("genus","species", "BPBM", "SVL", "finger", "toe", "ft", "anterior", "posterior", "ap")
 
-head(dat2)
+head(dat)
+## ---- merge ----
+#merge measurement with score data
+dat2 <- merge(dat, scores, by = c('BPBM', 'genus', 'species', 'SVL'), all=TRUE)
 
 ## ---- exploredata --------
 
@@ -101,10 +109,10 @@ dev.off()
 processeddata <- dat2      # change if you did more steps
 
 # location to save file
-save_data_location <- "../../Data/Processed_data/processeddata.rds"
+save_data_location <- "../../Data/Processed_data/processeddata2.rds"
 saveRDS(processeddata, file = save_data_location)
 
-save_data_location_csv <- "../../Data/Processed_data/processeddata.csv"
+save_data_location_csv <- "../../Data/Processed_data/processeddata2.csv"
 write.csv(processeddata, file = save_data_location_csv, row.names=FALSE)
 
 print(dat2 )
